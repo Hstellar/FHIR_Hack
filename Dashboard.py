@@ -3,18 +3,13 @@ import streamlit as st
 import os
 import pickle
 import shap
-import xgboost
+
 import matplotlib.pyplot as plt
 import numpy as np
-from sklearn.model_selection import train_test_split
-import joblib
+
 import streamlit.components.v1 as components
 import matplotlib.pyplot as plt
-import seaborn as sns
-from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder
-from sklearn.impute import SimpleImputer
-from sklearn.pipeline import Pipeline 
+
 
 def read_from_pickle(path):
     with open(path, 'rb') as file:
@@ -30,9 +25,6 @@ anemia_features = ['DR1DRSTZ','DRD350A','DRD350C','DRD350D','DRD350E','DRD350G',
 ###read csv
 
 x_test = pd.read_csv('x_test_anemia.csv')
-# seed = 195
-# test_size = 0.3
-# X_train, X_test, y_train, y_test = train_test_split(df_anemia[anemia_features], df_anemia['Anemia'], test_size=test_size, random_state=seed)
 
 ##########Streamlit dashboard
 desc = "Using trained model we predict anemia for demonstration"
@@ -79,9 +71,6 @@ DRD370T = st.number_input('Other fish eaten during past 30 days',value=2)
 DRD370U =st.number_input('Other unknown eaten during past 30 days',value=2)
 DRD370V =st.number_input('Refused to eat fish during past 30 days',value=2)
 
-# X_test = pd.DataFrame(data = [DR1DRSTZ,DRD350A,DRD350C,DRD350D,DRD350E,DRD350G,DRD350I,DRD360,DRD370C,DRD370G,DRD370H,DRD370I,DRD370K,DRD370L,DRD370N,
-#  DRD370R,DRD370T,DRD370U,Gender,Age,Tot_family_income,Tot_no_fam_members,Cancer,BMI,Educationlevel,Ethinicity,Breast_fed,
-#  GlycoHemoglobin],columns = anemia_features)
 X_test = pd.DataFrame([[DR1DRSTZ],[DRD350A],[DRD350C],[DRD350D],[DRD350E],[DRD350G],[DRD350I],[DRD360],[DRD370C],[DRD370G],[DRD370H],[DRD370I],[DRD370K],[DRD370L],[DRD370N],
  [DRD370R],[DRD370T],[DRD370U],[Gender],[Age],[Tot_family_income],[Tot_no_fam_members],[Cancer],[BMI],[Educationlevel],[Ethinicity],[Breast_fed],
  [GlycoHemoglobin]]).T
@@ -89,7 +78,7 @@ X_test.columns = anemia_features
 pkl_filename = "Pickle_anemia_Model.pkl"
 with open(pkl_filename, 'rb') as file:
     anemia_model = pickle.load(file)
-#anemia_model = joblib.load(pkl_filename)
+
 if st.button('Generate prediction for anemia'):
     predict = anemia_model.predict(X_test)
     if predict==0:
@@ -119,7 +108,7 @@ The larger the SHAP value magnitude, the more important the driver is.<br>
 pkl_filename = "Pickle_cholestrol_level.pkl"
 with open(pkl_filename, 'rb') as file:
     rf = pickle.load(file)
-    
+
 df = pd.read_csv('x_test_chol.csv')
 explainer = shap.TreeExplainer(rf)
 shap_values = explainer.shap_values(df)
